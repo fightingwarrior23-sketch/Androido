@@ -1,0 +1,150 @@
+/// Arabic texts. Key = the English text used in the code, value = Arabic.
+/// {slots} such as {n} must stay exactly as they are.
+/// Run  python3 tools/check_translations.py  after adding or changing any text.
+/// Words shared with the desktop program (translations_ar.py) use the same Arabic.
+const Map<String, String> arStrings = {
+  // ---- shared with the desktop program
+  'Bottom left': 'أسفل اليسار',
+  'Bottom right': 'أسفل اليمين',
+  'Top left': 'أعلى اليسار',
+  'Top right': 'أعلى اليمين',
+  'Cancelled': 'تم الإلغاء',
+  'Edit': 'تعديل',
+  'Export': 'تصدير',
+  'Language': 'اللغة (Language)',
+  'Options': 'الخيارات',
+  'Page': 'صفحة',
+  'Page {n}': 'صفحة {n}',
+  'Save project': 'حفظ المشروع',
+  'Undo': 'تراجع',
+
+  // ---- general
+  'Lecture Stamper': 'مُؤقِّت المحاضرات (Lecture Stamper)',
+  'OK': 'حسنًا',
+  'Cancel': 'إلغاء',
+  'Delete': 'حذف',
+  'Remove': 'إزالة',
+  'Skip': 'تخطي',
+  'Settings': 'الإعدادات',
+  'Untitled': 'بدون عنوان',
+  'Projects': 'المشاريع',
+
+  // ---- home
+  'New project': 'مشروع جديد',
+  'No projects yet. Tap New project, choose the lecture audio, then the slides.':
+      'لا توجد مشاريع بعد. اضغط «مشروع جديد» ثم اختر صوت المحاضرة ثم الشرائح.',
+  'Stamps ({n})': 'الأوقات المسجّلة ({n})',
+  'Delete this project?': 'هل تريد حذف هذا المشروع؟',
+  'Your audio and PDFs are not touched.': 'ملفات الصوت وPDF لن تتأثر.',
+  'This project cannot be opened.': 'لا يمكن فتح هذا المشروع.',
+  'PDF not found': 'لم يتم العثور على ملف PDF',
+  'Choose the file': 'اختر الملف',
+
+  // ---- file browser
+  'Choose the audio': 'اختر ملف الصوت',
+  'Choose the first PDF': 'اختر أول ملف PDF',
+  'Choose a PDF': 'اختر ملف PDF',
+  'By folder': 'حسب المجلد',
+  'Show all': 'عرض الكل',
+  'Sort': 'ترتيب',
+  'Name': 'الاسم',
+  'Date': 'التاريخ',
+  'Ascending': 'تصاعدي',
+  'Descending': 'تنازلي',
+  'Scan again': 'فحص من جديد',
+  'Search by name': 'ابحث بالاسم',
+  'Nothing found.': 'لا يوجد شيء.',
+  '{n} files': '{n} ملف',
+  'Allow access': 'السماح بالوصول',
+  'Lecture Stamper needs access to your files to find your audio and PDFs.':
+      'يحتاج البرنامج إلى الوصول إلى ملفاتك ليجد ملفات الصوت وPDF.',
+
+  // ---- player
+  'Stamp': 'تسجيل',
+  'Stamp list': 'قائمة الأوقات',
+  'Split screen': 'تقسيم الشاشة',
+  'Add PDF': 'إضافة PDF',
+  'Add a second PDF to use split screen.': 'أضف ملف PDF ثانيًا لاستخدام تقسيم الشاشة.',
+  'Remove this PDF': 'إزالة ملف PDF هذا',
+  'Remove this PDF?': 'هل تريد إزالة ملف PDF هذا؟',
+  'Its stamps are removed too.': 'ستُحذف أوقاته المسجّلة أيضًا.',
+  'A project needs at least one PDF.': 'يحتاج المشروع إلى ملف PDF واحد على الأقل.',
+  'This PDF is already loaded.': 'ملف PDF هذا محمّل بالفعل.',
+  'No PDF loaded.': 'لا يوجد ملف PDF.',
+  'Rename project': 'تغيير اسم المشروع',
+  'Project name': 'اسم المشروع',
+  'Project saved.': 'تم حفظ المشروع.',
+  'Go to page': 'اذهب إلى صفحة',
+  'Flag which page?': 'أي صفحة تريد تسجيلها؟',
+  'Left page ({n})': 'الصفحة اليسرى ({n})',
+  'Right page ({n})': 'الصفحة اليمنى ({n})',
+  'Both pages': 'الصفحتان معًا',
+  'Already stamped here.': 'تم تسجيل هذا الوقت من قبل.',
+  'Stamped page {n} at {t}': 'تم تسجيل الصفحة {n} عند {t}',
+  'Stamped {k} pages at {t}': 'تم تسجيل {k} صفحات عند {t}',
+  'The audio file cannot be opened.': 'لا يمكن فتح ملف الصوت.',
+  'Choose another': 'اختر ملفًا آخر',
+  'Save for the desktop program (.lvm)': 'حفظ لبرنامج الكمبيوتر (.lvm)',
+
+  // ---- audio bar
+  'Play': 'تشغيل',
+  'Pause': 'إيقاف مؤقت',
+  'Back 5 s': 'رجوع 5 ثوانٍ',
+  'Forward 5 s': 'تقديم 5 ثوانٍ',
+  'Back 10 s': 'رجوع 10 ثوانٍ',
+  'Forward 10 s': 'تقديم 10 ثوانٍ',
+  'Cut the end': 'قص النهاية',
+  'End earlier by 1 s': 'تقديم النهاية ثانية',
+  'End later by 1 s': 'تأخير النهاية ثانية',
+  'Lock the end': 'تثبيت النهاية',
+  'Unlock the end': 'إلغاء تثبيت النهاية',
+  'The end marker is before the first stamp.': 'علامة النهاية قبل أول وقت مسجّل.',
+  'Move 1 s earlier': 'تقديم ثانية',
+  'Move 1 s later': 'تأخير ثانية',
+  'Cannot move this stamp there.': 'لا يمكن نقل هذا الوقت إلى هناك.',
+  'Speed': 'السرعة',
+
+  // ---- stamp list
+  'Edit stamp': 'تعديل الوقت',
+  'Time (m:ss or h:mm:ss)': 'الوقت (مثل 12:30 أو 1:02:03)',
+  'That stamp already exists.': 'هذا الوقت مسجّل بالفعل.',
+  'Cannot read this time or page.': 'لا يمكن قراءة هذا الوقت أو رقم الصفحة.',
+  'No stamps yet. Tap the Stamp button while a slide is on screen.':
+      'لا توجد أوقات بعد. اضغط زر «تسجيل» أثناء ظهور الشريحة على الشاشة.',
+
+  // ---- export
+  'Export video': 'تصدير الفيديو',
+  'File name': 'اسم الملف',
+  'Folder inside Movies': 'مجلد داخل Movies',
+  'Leave empty to save in Movies.': 'اتركه فارغًا للحفظ في Movies مباشرة.',
+  'Video size': 'حجم الفيديو',
+  'Smallest': 'الأصغر',
+  'Balanced': 'متوازن',
+  'Sharpest': 'الأوضح',
+  'Keep the app open while the video is made.': 'أبقِ التطبيق مفتوحًا أثناء إنشاء الفيديو.',
+  'Making the video': 'جارٍ إنشاء الفيديو',
+  'Drawing the slides…': 'جارٍ رسم الشرائح…',
+  'Encoding the video…': 'جارٍ ترميز الفيديو…',
+  'Video ready': 'الفيديو جاهز',
+  'Saved to {path}': 'تم الحفظ في {path}',
+  'Export failed': 'فشل التصدير',
+  'The unfinished file was deleted.': 'تم حذف الملف غير المكتمل.',
+  'Stamp at least one slide first.': 'سجّل شريحة واحدة على الأقل أولًا.',
+  'The audio file was not found.': 'لم يتم العثور على ملف الصوت.',
+  'A PDF was not found: {name}': 'لم يتم العثور على ملف PDF: {name}',
+
+  // ---- settings
+  'Stamp button position': 'مكان زر التسجيل',
+  'You can also drag the button anywhere on the slides; the spot is remembered.':
+      'يمكنك أيضًا سحب الزر إلى أي مكان فوق الشرائح، وسيتذكر البرنامج مكانه.',
+  'Stamp style': 'طريقة التسجيل',
+  'Pause, then stamp (recommended)': 'إيقاف مؤقت ثم تسجيل (موصى بها)',
+  'Stamp pauses the audio and keeps that second. Pick the page, tap Stamp again, and the audio resumes.':
+      'يوقف زر التسجيل الصوت مؤقتًا ويحفظ تلك الثانية. اختر الصفحة ثم اضغط التسجيل مرة أخرى ليُستأنف الصوت.',
+  'Stamp while playing': 'التسجيل أثناء التشغيل',
+  'One tap stamps the current second without stopping the audio.':
+      'ضغطة واحدة تسجّل الثانية الحالية دون إيقاف الصوت.',
+  'Viewing': 'العرض',
+  'Split screen when a project has two PDFs': 'تقسيم الشاشة عندما يحتوي المشروع على ملفَّي PDF',
+  'Default playback speed': 'سرعة التشغيل الافتراضية',
+};
