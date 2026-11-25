@@ -1,0 +1,59 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+defaults:
+  run:
+    working-directory: LectureStamper-Android/lecture_stamper
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test the stamp rules (Python mirror) and the Arabic texts
+        run: |
+          python3 test_py/test_stamp_logic.py
+          python3 tools/check_translations.py
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create the Android project around our code
+        run: |
+          flutter create --platforms=android --org com.lecturestamper --project-name lecture_stamper .
+          rm -f test/widget_test.dart
+          PKG_DIR=android/app/src/main/kotlin/com/lecturestamper/lecture_stamper
+          mkdir -p "$PKG_DIR"
+          rm -f "$PKG_DIR"/MainActivity.kt
+          cp android_overlay/kotlin/*.kt "$PKG_DIR"/
+          cp android_overlay/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
+          sed -i 's/minSdk = flutter.minSdkVersion/minSdk = 24/; s/minSdkVersion flutter.minSdkVersion/minSdkVersion 24/' android/app/build.gradle* || true
+
+      - name: Install packages
+        run: flutter pub get
+
+      - name: Analyze (shown in the log, does not stop the build)
+        run: flutter analyze || true
+
+      - name: Dart tests
+        run: flutter test
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LectureStamper-apk
+          path: LectureStamper-Android/lecture_stamper/build/app/outputs/flutter-apk/app-release.apk
