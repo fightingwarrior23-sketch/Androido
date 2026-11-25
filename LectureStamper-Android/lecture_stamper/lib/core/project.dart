@@ -16,6 +16,8 @@ class Project {
   bool stampWhilePlaying; // false = pause-then-stamp (recommended)
   double position; // last audio position (seconds)
   List<int> lastPages; // last viewed page per PDF (0-based)
+  double? endTime; // cut the video here (audio second); null = until the audio ends
+  bool endLocked; // the end marker cannot be dragged while locked
 
   Project({
     this.name = '',
@@ -31,6 +33,8 @@ class Project {
     this.stampWhilePlaying = false,
     this.position = 0,
     List<int>? lastPages,
+    this.endTime,
+    this.endLocked = false,
   })  : pdfs = pdfs ?? [],
         book = book ?? StampBook(),
         lastPages = lastPages ?? [];
@@ -50,6 +54,8 @@ class Project {
           'speed': speed,
           'exportFolder': exportFolder,
           'stampWhilePlaying': stampWhilePlaying,
+          'endTime': endTime,
+          'endLocked': endLocked,
         },
         'position': position,
         'lastPages': lastPages,
@@ -78,6 +84,8 @@ class Project {
       stampWhilePlaying: (st['stampWhilePlaying'] ?? false) as bool,
       position: ((j['position'] ?? 0) as num).toDouble(),
       lastPages: ((j['lastPages'] as List?) ?? []).map((e) => (e as num).toInt()).toList(),
+      endTime: (st['endTime'] as num?)?.toDouble(),
+      endLocked: (st['endLocked'] ?? false) as bool,
     );
   }
 

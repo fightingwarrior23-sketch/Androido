@@ -91,6 +91,17 @@ const Map<String, String> arStrings = {
   'Pause': 'إيقاف مؤقت',
   'Back 5 s': 'رجوع 5 ثوانٍ',
   'Forward 5 s': 'تقديم 5 ثوانٍ',
+  'Back 10 s': 'رجوع 10 ثوانٍ',
+  'Forward 10 s': 'تقديم 10 ثوانٍ',
+  'Cut the end': 'قص النهاية',
+  'End earlier by 1 s': 'تقديم النهاية ثانية',
+  'End later by 1 s': 'تأخير النهاية ثانية',
+  'Lock the end': 'تثبيت النهاية',
+  'Unlock the end': 'إلغاء تثبيت النهاية',
+  'The end marker is before the first stamp.': 'علامة النهاية قبل أول وقت مسجّل.',
+  'Move 1 s earlier': 'تقديم ثانية',
+  'Move 1 s later': 'تأخير ثانية',
+  'Cannot move this stamp there.': 'لا يمكن نقل هذا الوقت إلى هناك.',
   'Speed': 'السرعة',
 
   // ---- stamp list

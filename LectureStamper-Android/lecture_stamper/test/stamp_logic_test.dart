@@ -72,6 +72,33 @@ void main() {
     expect(s[2].end, isNull);
   });
 
+  test('nudge moves a stamp, never below 0, refuses clashes', () {
+    final b = StampBook(const [Stamp(0, 0, 10), Stamp(0, 1, 20)]);
+    expect(b.nudge(const Stamp(0, 0, 10), 1), isTrue);
+    expect(b.stamps.first.seconds, 11);
+    final d = StampBook(const [Stamp(0, 0, 10), Stamp(0, 0, 20)]);
+    expect(d.nudge(const Stamp(0, 0, 10), 10), isFalse); // would clash
+    final c = StampBook(const [Stamp(0, 0, 0)]);
+    expect(c.nudge(const Stamp(0, 0, 0), -1), isFalse);
+  });
+
+  test('trimmed segments: begin at first stamp, optional end', () {
+    final b = StampBook(const [
+      Stamp(0, 0, 12),
+      Stamp(0, 1, 40),
+      Stamp(1, 0, 40),
+      Stamp(0, 0, 90),
+    ]);
+    var t = b.trimmedSegments();
+    expect(t.length, 3);
+    expect(t.first.start, 12);
+    expect(t.last.end, isNull);
+    t = b.trimmedSegments(endAt: 60);
+    expect(t.length, 2);
+    expect(t.last.end, 60);
+    expect(b.trimmedSegments(endAt: 5), isEmpty);
+  });
+
   test('grid matches desktop', () {
     expect(gridLayout(2), [2]);
     expect(gridLayout(3), [2, 1]);

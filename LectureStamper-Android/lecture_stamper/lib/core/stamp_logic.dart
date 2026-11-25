@@ -91,6 +91,15 @@ class StampBook {
     return true;
   }
 
+  /// Move a stamp by [delta] seconds (never below 0:00). Returns false if
+  /// nothing moved or it would land on an identical stamp.
+  bool nudge(Stamp s, double delta) {
+    final t = s.seconds + delta;
+    final nt = t < 0 ? 0.0 : t;
+    if ((nt - s.seconds).abs() < 0.0005) return false;
+    return edit(s, s.copyWith(seconds: nt));
+  }
+
   /// Undo the last change (add, delete or edit). Returns false if none.
   bool undo() {
     if (_undo.isEmpty) return false;
@@ -145,6 +154,20 @@ class StampBook {
       final start = i == 0 ? 0.0 : g[i].$1;
       final end = i + 1 < g.length ? g[i + 1].$1 : null;
       segs.add(Segment(start, end, g[i].$2));
+    }
+    return segs;
+  }
+
+  /// Slide timeline for the trimmed export: the video begins at the first
+  /// stamp (everything before it is dropped) and, if [endAt] is given, is cut
+  /// there. Stamps at or after [endAt] are ignored. Times are absolute
+  /// (audio seconds); the first segment's start is the begin time.
+  List<Segment> trimmedSegments({double? endAt}) {
+    final g = groups().where((e) => endAt == null || e.$1 < endAt).toList();
+    final segs = <Segment>[];
+    for (var i = 0; i < g.length; i++) {
+      final end = i + 1 < g.length ? g[i + 1].$1 : endAt;
+      segs.add(Segment(g[i].$1, end, g[i].$2));
     }
     return segs;
   }

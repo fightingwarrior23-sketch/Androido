@@ -45,13 +45,15 @@ class MainActivity : FlutterActivity() {
                     val name = call.argument<String>("name") ?: "lecture"
                     val folder = call.argument<String>("folder") ?: ""
                     val kbps = call.argument<Int>("kbps") ?: 500
+                    val trimStartUs = ((call.argument<Double>("trimStart") ?: 0.0) * 1_000_000).toLong()
+                    val trimEndUs = ((call.argument<Double>("trimEnd") ?: -1.0) * 1_000_000).toLong()
                     cancel.set(false)
                     pool.execute {
                         val tmp = File(cacheDir, "export_out.mp4")
                         try {
                             VideoExporter(cancel, cacheDir, kbps) { p ->
                                 main.post { channel.invokeMethod("progress", p) }
-                            }.export(slides, audio, tmp)
+                            }.export(slides, audio, tmp, trimStartUs, trimEndUs)
                             val shown = saveToMovies(tmp, name, folder)
                             main.post { result.success(shown) }
                         } catch (e: CancellationException) {

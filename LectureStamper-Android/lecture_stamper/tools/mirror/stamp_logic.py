@@ -99,6 +99,12 @@ class StampBook:
         self._sort()
         return True
 
+    def nudge(self, s, delta):
+        nt = max(s[2] + delta, 0.0)
+        if abs(nt - s[2]) < 0.0005:
+            return False
+        return self.edit(s, (s[0], s[1], nt))
+
     def undo(self):
         if not self._undo:
             return False
@@ -129,6 +135,14 @@ class StampBook:
             start = 0.0 if i == 0 else t
             end = g[i + 1][0] if i + 1 < len(g) else None
             segs.append((start, end, pages))
+        return segs
+
+    def trimmed_segments(self, end_at=None):
+        g = [e for e in self.groups() if end_at is None or e[0] < end_at]
+        segs = []
+        for i, (t, pages) in enumerate(g):
+            end = g[i + 1][0] if i + 1 < len(g) else end_at
+            segs.append((t, end, pages))
         return segs
 
 

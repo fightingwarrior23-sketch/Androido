@@ -99,6 +99,17 @@ class _StampListBodyState extends State<_StampListBody> {
     }
   }
 
+  void _nudge(Stamp s, double delta) {
+    if (pr.book.nudge(s, delta)) {
+      widget.onChanged();
+      setState(() {});
+    } else {
+      final sm = ScaffoldMessenger.of(context);
+      sm.clearSnackBars();
+      sm.showSnackBar(SnackBar(content: Text(tr('Cannot move this stamp there.')), duration: const Duration(seconds: 2)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final stamps = pr.book.stamps;
@@ -135,8 +146,21 @@ class _StampListBodyState extends State<_StampListBody> {
                     subtitle: Text(pdfName, maxLines: 1, overflow: TextOverflow.ellipsis),
                     onTap: () => widget.onJump(s),
                     trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                      IconButton(icon: const Icon(Icons.edit), tooltip: tr('Edit'), onPressed: () => _edit(s)),
                       IconButton(
+                        visualDensity: VisualDensity.compact,
+                        icon: const Icon(Icons.remove_circle_outline),
+                        tooltip: tr('Move 1 s earlier'),
+                        onPressed: () => _nudge(s, -1),
+                      ),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        icon: const Icon(Icons.add_circle_outline),
+                        tooltip: tr('Move 1 s later'),
+                        onPressed: () => _nudge(s, 1),
+                      ),
+                      IconButton(visualDensity: VisualDensity.compact, icon: const Icon(Icons.edit), tooltip: tr('Edit'), onPressed: () => _edit(s)),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
                         icon: const Icon(Icons.delete_outline),
                         tooltip: tr('Delete'),
                         onPressed: () {

@@ -74,6 +74,8 @@ class Native {
     required String name,
     required String folder,
     required int kbps,
+    double trimStart = 0,
+    double trimEnd = -1,
   }) async {
     final r = await _ch.invokeMethod<String>('export', {
       'slides': slides,
@@ -81,6 +83,8 @@ class Native {
       'name': name,
       'folder': folder,
       'kbps': kbps,
+      'trimStart': trimStart,
+      'trimEnd': trimEnd,
     });
     return r ?? '';
   }

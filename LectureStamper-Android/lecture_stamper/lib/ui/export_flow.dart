@@ -15,6 +15,9 @@ Future<void> runExport(BuildContext context, Project pr) async {
   void say(String m) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
 
   if (pr.book.stamps.isEmpty) return say(tr('Stamp at least one slide first.'));
+  final segs = pr.book.trimmedSegments(endAt: pr.endTime);
+  if (segs.isEmpty) return say(tr('The end marker is before the first stamp.'));
+  final begin = segs.first.start; // the video starts at the first stamp
   if (!File(pr.audio.path).existsSync()) return say(tr('The audio file was not found.'));
   for (final r in pr.pdfs) {
     if (!File(r.path).existsSync()) return say(tr('A PDF was not found: {name}', {'name': p.basename(r.path)}));
@@ -115,12 +118,11 @@ Future<void> runExport(BuildContext context, Project pr) async {
   String? result, error;
   try {
     await WakelockPlus.enable();
-    final segs = pr.book.segments();
     final slides = <Map<String, Object>>[];
     for (var i = 0; i < segs.length; i++) {
       if (cancelled) throw 'cancelled';
       final f = await renderer.render(segs[i].pages, slidesDir, i);
-      slides.add({'start': segs[i].start, 'path': f.path});
+      slides.add({'start': segs[i].start - begin, 'path': f.path});
       progress.value = 0.3 * (i + 1) / segs.length;
     }
     await renderer.dispose();
@@ -133,6 +135,8 @@ Future<void> runExport(BuildContext context, Project pr) async {
       name: safe.isEmpty ? 'lecture' : safe,
       folder: pr.exportFolder,
       kbps: kbps,
+      trimStart: begin,
+      trimEnd: pr.endTime ?? -1,
     );
   } catch (e) {
     final msg = '$e';

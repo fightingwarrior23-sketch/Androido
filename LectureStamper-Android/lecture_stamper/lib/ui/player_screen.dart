@@ -118,6 +118,20 @@ class _PlayerScreenState extends State<PlayerScreen> with WidgetsBindingObserver
     await player.seek(t);
   }
 
+  /// "Cut the end": off = the video runs to the end of the audio; on = a
+  /// marker (starting at the very end) that the person drags earlier.
+  void _toggleEnd() {
+    setState(() {
+      if (pr.endTime == null) {
+        pr.endTime = total.inMilliseconds / 1000;
+      } else {
+        pr.endTime = null;
+      }
+      pr.endLocked = false;
+    });
+    _scheduleSave();
+  }
+
   // --------------------------------------------------------------- stamping
   (int, int) get _leftPage => (leftIdx, pages[leftIdx]);
   (int, int)? get _rightPage => pr.split && rightIdx < pr.pdfs.length ? (rightIdx, pages[rightIdx]) : null;
@@ -453,8 +467,18 @@ class _PlayerScreenState extends State<PlayerScreen> with WidgetsBindingObserver
                   _seekTo(d);
                 },
                 onToggle: _toggle,
-                onBack: () => _seekTo(player.position - const Duration(seconds: 5)),
-                onForward: () => _seekTo(player.position + const Duration(seconds: 5)),
+                onSkip: (sec) => _seekTo(player.position + Duration(seconds: sec)),
+                endSec: pr.endTime,
+                endLocked: pr.endLocked,
+                onEndToggle: _toggleEnd,
+                onEndLock: () {
+                  setState(() => pr.endLocked = !pr.endLocked);
+                  _scheduleSave();
+                },
+                onEndChanged: (v) {
+                  setState(() => pr.endTime = (v * 1000).round() / 1000);
+                  _scheduleSave();
+                },
                 onSpeed: (v) {
                   player.setSpeed(v);
                   setState(() => pr.speed = v);
@@ -517,26 +541,46 @@ class _PlayerScreenState extends State<PlayerScreen> with WidgetsBindingObserver
       initialPage: pages[idx],
       onPage: (pg) {
         pages[idx] = pg;
+        if (pr.split) {
+          // the split headers show each side's page number
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() {});
+          });
+        }
         _scheduleSave();
       },
     );
   }
 
   Widget _header(int value, ValueChanged<int> onChanged) {
+    final cs = Theme.of(context).colorScheme;
     return SizedBox(
       height: 44,
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<int>(
-          isExpanded: true,
-          value: value,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          items: [
-            for (var i = 0; i < pr.pdfs.length; i++)
-              DropdownMenuItem(value: i, child: Text(p.basenameWithoutExtension(pr.pdfs[i].path), overflow: TextOverflow.ellipsis)),
-          ],
-          onChanged: (v) => v == null ? null : onChanged(v),
+      child: Row(children: [
+        Expanded(
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<int>(
+              isExpanded: true,
+              value: value,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              items: [
+                for (var i = 0; i < pr.pdfs.length; i++)
+                  DropdownMenuItem(value: i, child: Text(p.basenameWithoutExtension(pr.pdfs[i].path), overflow: TextOverflow.ellipsis)),
+              ],
+              onChanged: (v) => v == null ? null : onChanged(v),
+            ),
+          ),
         ),
-      ),
+        Container(
+          margin: const EdgeInsetsDirectional.only(end: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(10)),
+          child: Text(
+            tr('Page {n}', {'n': pages[value] + 1}),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: cs.onPrimaryContainer),
+          ),
+        ),
+      ]),
     );
   }
 

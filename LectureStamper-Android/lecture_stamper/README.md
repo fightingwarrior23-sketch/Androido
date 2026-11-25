@@ -24,7 +24,7 @@ The workflow runs the Python rule tests, the Arabic-text check, `flutter analyze
 ## Behaviour choices (change if you prefer)
 - **Stamp style:** default is pause-then-stamp: first tap pauses and keeps that second (button turns orange with the time),
   pick the page, tap again to stamp, audio resumes. Settings switch it to one-tap stamping while playing.
-- Same-second pages are drawn together (side by side / grid), first slide starts at 0:00, last one stays to the end.
+- Same-second pages are drawn together (side by side / grid), the video begins at the first stamp (earlier audio is dropped); the last slide stays to the end, or to the End marker if "Cut the end" is on.
 - Video: 1920x1080, 2 fps, H.264 bitrate mode (Smallest 300 / Balanced 500 / Sharpest 1000 kbps), AAC 96 kbps.
   Android's encoder has no CRF mode, so size is set by bitrate; a sync frame is forced at each slide change.
 - Export folder is a sub-folder of **Movies** (empty = Movies itself).

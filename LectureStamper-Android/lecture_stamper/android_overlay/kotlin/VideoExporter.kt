@@ -34,11 +34,12 @@ class VideoExporter(
         if (cancel.get()) throw CancellationException("cancelled")
     }
 
-    fun export(slides: List<Slide>, audioPath: String, out: File) {
+    /** [trimStartUs]/[trimEndUs]: keep only that part of the audio (end <= 0 = to the end). Slide times must already be relative to the start. */
+    fun export(slides: List<Slide>, audioPath: String, out: File, trimStartUs: Long = 0L, trimEndUs: Long = -1L) {
         val tmpAudio = File(cacheDir, "stamper_audio.m4a")
         val tmpVideo = File(cacheDir, "stamper_video.mp4")
         try {
-            val durationUs = transcodeAudio(audioPath, tmpAudio) { onProgress(0.45 * it) }
+            val durationUs = transcodeAudio(audioPath, tmpAudio, trimStartUs, trimEndUs) { onProgress(0.45 * it) }
             check()
             encodeVideo(slides, durationUs, tmpVideo) { onProgress(0.45 + 0.50 * it) }
             check()
@@ -55,7 +56,7 @@ class VideoExporter(
 
     // ------------------------------------------------------------------ audio
     /** Returns the audio length in microseconds. */
-    private fun transcodeAudio(src: String, dst: File, progress: (Double) -> Unit): Long {
+    private fun transcodeAudio(src: String, dst: File, startUs: Long, endUs: Long, progress: (Double) -> Unit): Long {
         val ex = MediaExtractor()
         ex.setDataSource(src)
         var track = -1
@@ -66,7 +67,10 @@ class VideoExporter(
         if (track < 0) { ex.release(); throw IllegalStateException("No audio track in this file") }
         ex.selectTrack(track)
         val inFmt = ex.getTrackFormat(track)
-        val totalUs = if (inFmt.containsKey(MediaFormat.KEY_DURATION)) inFmt.getLong(MediaFormat.KEY_DURATION) else 0L
+        val fullUs = if (inFmt.containsKey(MediaFormat.KEY_DURATION)) inFmt.getLong(MediaFormat.KEY_DURATION) else 0L
+        val stopUs = if (endUs > 0L) (if (fullUs > 0L) minOf(endUs, fullUs) else endUs) else fullUs
+        val totalUs = if (stopUs > 0L) maxOf(1L, stopUs - startUs) else 0L
+        if (startUs > 0L) ex.seekTo(startUs, MediaExtractor.SEEK_TO_PREVIOUS_SYNC)
 
         val dec = MediaCodec.createDecoderByType(inFmt.getString(MediaFormat.KEY_MIME)!!)
         dec.configure(inFmt, null, null, 0)
@@ -129,7 +133,7 @@ class VideoExporter(
                     if (i >= 0) {
                         val b = dec.getInputBuffer(i)!!
                         val n = ex.readSampleData(b, 0)
-                        if (n < 0) {
+                        if (n < 0 || (endUs > 0L && ex.sampleTime > endUs)) {
                             dec.queueInputBuffer(i, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
                             inputDone = true
                         } else {
@@ -144,7 +148,15 @@ class VideoExporter(
                 } else if (oi >= 0) {
                     if (info.size > 0) {
                         if (enc == null) startEncoder(dec.outputFormat)
-                        feed(dec.getOutputBuffer(oi)!!, info.offset, info.size)
+                        var off = info.offset
+                        var sz = info.size
+                        if (startUs > 0L && info.presentationTimeUs < startUs) {
+                            // the first chunk may start before the cut point: skip its front part
+                            val skip = minOf(((startUs - info.presentationTimeUs) * rate / 1_000_000L).toInt() * 2 * channels, sz)
+                            off += skip
+                            sz -= skip
+                        }
+                        if (sz > 0) feed(dec.getOutputBuffer(oi)!!, off, sz)
                     }
                     dec.releaseOutputBuffer(oi, false)
                     if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) decDone = true

@@ -79,6 +79,23 @@ check("last open ended", segs[-1][1] is None and segs[0][1] == 40)
 check("page comes back", segs[2][2] == [(0, 0)])
 check("no stamps -> no segments", m.StampBook().segments() == [])
 
+# --- nudge
+b = m.StampBook([(0, 0, 10), (0, 1, 20)])
+check("nudge +1", b.nudge((0, 0, 10), 1) and b.stamps[0] == (0, 0, 11))
+b2 = m.StampBook([(0, 0, 10), (0, 0, 20)])
+check("nudge clash refused", not b2.nudge((0, 0, 10), 10) and b2.stamps[0] == (0, 0, 10))
+check("nudge not below 0", m.StampBook([(0, 0, 0.4)]).nudge((0, 0, 0.4), -1))
+check("nudge at 0 stays", not m.StampBook([(0, 0, 0)]).nudge((0, 0, 0), -1))
+
+# --- trimmed segments (video begins at first stamp, optional end)
+b = m.StampBook([(0, 0, 12), (0, 1, 40), (1, 0, 40), (0, 0, 90)])
+t = b.trimmed_segments()
+check("trim begins at first stamp", t[0][0] == 12 and len(t) == 3)
+check("trim last open ended", t[-1][1] is None)
+t = b.trimmed_segments(end_at=60)
+check("trim end cuts last slide", len(t) == 2 and t[-1][1] == 60 and t[-1][2] == [(0, 1), (1, 0)])
+check("trim end before first stamp -> empty", b.trimmed_segments(end_at=5) == [])
+
 # --- cross-check against the desktop code
 if desk:
     random.seed(1)
